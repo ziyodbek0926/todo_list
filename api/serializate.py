@@ -17,11 +17,11 @@ class TaskSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Siz notogri title tanlagansiz.")
         return value
     
-    def validate(self, date):
-        created_date = datetime.fromisoformat(date['created'])
-        if created_date['date'] < now():
+    def validate(self, data):
+        created_date = datetime.fromisoformat(data['created'])
+        if created_date['data'] > now():
             raise serializers.ValidationError("siz noto'g'ri sana tanladingiz")
-        return date
+        return data
     
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -29,10 +29,7 @@ class TaskSerializer(serializers.ModelSerializer):
         return data
     
 class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'password']
-
+    
     sorted_tasks = serializers.SerializerMethodField()
 
     def get_sorted_tasks(self, obj):
@@ -42,4 +39,7 @@ class UserSerializer(serializers.ModelSerializer):
         serializer = TaskSerializer(related_objects, many=True)
         return serializer.data
     
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'password']
         
